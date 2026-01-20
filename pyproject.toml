@@ -1,0 +1,49 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "roadtint"
+version = "0.1.0"
+description = "Quantify road congestion from traffic-layer map imagery."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "Muhammad Hassan Raza" }]
+keywords = ["traffic", "congestion", "gis", "image-analysis", "maps"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Image Processing",
+]
+dependencies = [
+    "numpy>=1.21",
+    "pillow>=9.0",
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+video = ["opencv-python-headless>=4.6"]
+plot  = ["matplotlib>=3.5"]
+dev   = ["pytest>=7.0", "ruff>=0.1"]
+
+[project.scripts]
+roadtint = "roadtint.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/hassixmalik/Trafic-Prediction-System"
+Issues = "https://github.com/hassixmalik/Trafic-Prediction-System/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+roadtint = ["profiles/*.yaml"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
