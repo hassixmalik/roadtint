@@ -1,0 +1,33 @@
+name: google_maps
+description: >
+  Google Maps traffic layer (satellite and default basemap). Bands were
+  measured from real screenshots: saturated road pixels cluster tightly at
+  hue ~0-4 (red), ~27 (orange) and ~122 (green). Dark red is a separate,
+  much darker band than red, so it is listed first and kept narrow in value.
+
+classes:
+  free:
+    weight: 0.0
+    color: "#34a853"
+    bands:
+      - { h_min: 110, h_max: 140, s_min: 0.35, v_min: 0.30 }
+
+  slow:
+    weight: 0.5
+    color: "#f9ab00"
+    bands:
+      - { h_min: 18, h_max: 45, s_min: 0.45, v_min: 0.40 }
+
+  congested:
+    weight: 1.0
+    color: "#e8453c"
+    bands:
+      # Wraps the hue origin: everything from 345 round to 12.
+      - { h_min: 345, h_max: 12, s_min: 0.45, v_min: 0.35 }
+
+  blocked:
+    weight: 1.5
+    color: "#8b1a10"
+    bands:
+      # Dark red / maroon: same hue family, much lower value.
+      - { h_min: 340, h_max: 14, s_min: 0.40, v_min: 0.12, v_max: 0.35 }

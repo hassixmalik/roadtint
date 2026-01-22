@@ -1,0 +1,30 @@
+name: here_traffic
+description: >
+  HERE traffic flow overlay. Uses a green/amber/red ramp similar to Google
+  but with a slightly cooler green and a brighter amber. Verify against your
+  own tiles before trusting the numbers.
+
+classes:
+  free:
+    weight: 0.0
+    color: "#00a000"
+    bands:
+      - { h_min: 95, h_max: 150, s_min: 0.35, v_min: 0.25 }
+
+  slow:
+    weight: 0.5
+    color: "#ffb300"
+    bands:
+      - { h_min: 35, h_max: 55, s_min: 0.45, v_min: 0.45 }
+
+  congested:
+    weight: 1.0
+    color: "#e00000"
+    bands:
+      - { h_min: 348, h_max: 10, s_min: 0.50, v_min: 0.35 }
+
+  blocked:
+    weight: 1.5
+    color: "#7a0000"
+    bands:
+      - { h_min: 340, h_max: 12, s_min: 0.40, v_min: 0.10, v_max: 0.35 }

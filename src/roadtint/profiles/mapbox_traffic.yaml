@@ -1,0 +1,31 @@
+name: mapbox_traffic
+description: >
+  Mapbox Traffic v1 default styling. Four congestion levels: low (green),
+  moderate (yellow), heavy (orange-red), severe (dark red). Starting point
+  only - run `roadtint calibrate` against your own style if you have
+  customised the palette.
+
+classes:
+  free:
+    weight: 0.0
+    color: "#4caf50"
+    bands:
+      - { h_min: 100, h_max: 145, s_min: 0.30, v_min: 0.30 }
+
+  slow:
+    weight: 0.5
+    color: "#ffd700"
+    bands:
+      - { h_min: 45, h_max: 65, s_min: 0.40, v_min: 0.45 }
+
+  congested:
+    weight: 1.0
+    color: "#ff6347"
+    bands:
+      - { h_min: 352, h_max: 25, s_min: 0.45, v_min: 0.40 }
+
+  blocked:
+    weight: 1.5
+    color: "#8b0000"
+    bands:
+      - { h_min: 350, h_max: 8, s_min: 0.45, v_min: 0.12, v_max: 0.40 }
