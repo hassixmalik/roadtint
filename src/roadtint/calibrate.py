@@ -26,7 +26,7 @@ from PIL import Image
 from .extract import rgb_to_hsv_array
 from .profile import HSVBand, Profile, ProfileError, SeverityClass
 
-__all__ = ["HueCluster", "suggest_palette", "profile_from_samples", "sample_color"]
+__all__ = ["HueCluster", "profile_from_samples", "sample_color", "suggest_palette"]
 
 # Reasonable defaults for "this pixel is part of a coloured overlay"
 # rather than basemap, terrain or text.

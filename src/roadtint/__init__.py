@@ -16,7 +16,7 @@ __all__ = [
     "Profile",
     "ProfileError",
     "SeverityClass",
+    "__version__",
     "builtin_profile_names",
     "load_profile",
-    "__version__",
 ]

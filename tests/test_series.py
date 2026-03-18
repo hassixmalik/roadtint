@@ -11,7 +11,7 @@ from roadtint.series import (
     write_json,
 )
 
-from .conftest import GREEN, ORANGE, RED, canvas, hline, to_image
+from .conftest import GREEN, RED, canvas, hline, to_image
 
 
 @pytest.fixture

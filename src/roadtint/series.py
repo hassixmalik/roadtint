@@ -25,10 +25,10 @@ from .extract import Measurement, extract_file
 from .profile import Profile
 
 __all__ = [
-    "TimePoint",
     "Series",
-    "parse_time_from_name",
+    "TimePoint",
     "build_series",
+    "parse_time_from_name",
     "write_csv",
     "write_json",
 ]

@@ -24,7 +24,7 @@ from typing import Dict, Iterable, List, Sequence, Tuple
 import numpy as np
 from PIL import Image
 
-__all__ = ["FrameHash", "DuplicateGroup", "dhash", "hamming", "hash_file", "find_duplicates"]
+__all__ = ["DuplicateGroup", "FrameHash", "dhash", "find_duplicates", "hamming", "hash_file"]
 
 
 @dataclass(frozen=True)

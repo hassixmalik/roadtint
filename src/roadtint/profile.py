@@ -21,9 +21,9 @@ import yaml
 
 __all__ = [
     "HSVBand",
-    "SeverityClass",
     "Profile",
     "ProfileError",
+    "SeverityClass",
     "builtin_profile_names",
     "load_profile",
 ]
@@ -82,7 +82,7 @@ class HSVBand:
         return self.h_min <= h <= self.h_max
 
     @classmethod
-    def from_mapping(cls, raw: Mapping[str, Any]) -> "HSVBand":
+    def from_mapping(cls, raw: Mapping[str, Any]) -> HSVBand:
         unknown = set(raw) - {"h_min", "h_max", "s_min", "s_max", "v_min", "v_max"}
         if unknown:
             raise ProfileError(f"unknown band keys: {sorted(unknown)}")
@@ -107,7 +107,7 @@ class HSVBand:
         hue_tol: float = 8.0,
         s_tol: float = 0.30,
         v_tol: float = 0.30,
-    ) -> "HSVBand":
+    ) -> HSVBand:
         """Build a band centred on one RGB colour, with tolerances.
 
         Used by calibration to turn sampled pixels into a usable band.
@@ -139,7 +139,7 @@ class SeverityClass:
     color: str = "#888888"
 
     @classmethod
-    def from_mapping(cls, name: str, raw: Mapping[str, Any]) -> "SeverityClass":
+    def from_mapping(cls, name: str, raw: Mapping[str, Any]) -> SeverityClass:
         if "bands" not in raw:
             raise ProfileError(f"class '{name}' has no bands")
         bands_raw = raw["bands"]
@@ -191,7 +191,7 @@ class Profile:
     # -- serialisation ---------------------------------------------------
 
     @classmethod
-    def from_mapping(cls, raw: Mapping[str, Any], source: Path | None = None) -> "Profile":
+    def from_mapping(cls, raw: Mapping[str, Any], source: Path | None = None) -> Profile:
         if not isinstance(raw, Mapping):
             raise ProfileError("profile must be a mapping at the top level")
         missing = {"name", "classes"} - set(raw)

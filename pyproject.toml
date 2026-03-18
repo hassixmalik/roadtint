@@ -47,3 +47,15 @@ testpaths = ["tests"]
 
 [tool.ruff]
 line-length = 100
+# The package supports 3.9, so typing.List/Dict in annotations are not
+# upgradable to builtin generics everywhere ruff would like.
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "RUF"]
+ignore = [
+    "UP006",  # non-pep585-annotation: needs >=3.9 runtime subscripting
+    "UP035",  # deprecated-import: typing.List etc still required on 3.9
+    "E501",   # line length is handled by the formatter
+    "RUF046", # explicit int(round(...)) documents the intended return type
+]

@@ -25,14 +25,14 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, Mapping, Sequence
+from typing import Any, Dict, Sequence
 
 import numpy as np
 from PIL import Image
 
 from .profile import Profile, load_profile
 
-__all__ = ["Measurement", "ExtractionError", "extract", "extract_file", "rgb_to_hsv_array"]
+__all__ = ["ExtractionError", "Measurement", "extract", "extract_file", "rgb_to_hsv_array"]
 
 
 class ExtractionError(RuntimeError):

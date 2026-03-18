@@ -1,8 +1,6 @@
-import numpy as np
-import pytest
 from PIL import Image
 
-from roadtint.dedup import dhash, find_duplicates, hamming, hash_file, unique_paths
+from roadtint.dedup import dhash, find_duplicates, hamming, unique_paths
 
 from .conftest import GREEN, RED, canvas, hline, to_image
 
