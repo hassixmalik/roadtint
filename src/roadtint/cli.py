@@ -20,6 +20,7 @@ from . import __version__
 from .calibrate import profile_from_samples, suggest_palette
 from .dedup import find_duplicates
 from .extract import ExtractionError, extract_file
+from .overlay import save_overlay
 from .profile import ProfileError, builtin_profile_names, load_profile
 from .series import build_series, write_csv, write_json
 
@@ -92,6 +93,13 @@ def cmd_extract(args: argparse.Namespace) -> int:
                 return 1
             continue
         rows.append(m.to_row())
+
+        if args.overlay:
+            try:
+                dest = Path(args.overlay) / f"{path.stem}.overlay.png"
+                save_overlay(path, dest, args.profile, roi=roi)
+            except (ExtractionError, ProfileError, OSError) as exc:
+                print(f"warning: overlay for {path.name}: {exc}", file=sys.stderr)
 
         if not args.json:
             shares = "  ".join(f"{k}={v:.3f}" for k, v in m.shares.items())
@@ -239,6 +247,8 @@ def build_parser() -> argparse.ArgumentParser:
     pe.add_argument("inputs", nargs="+", help="image files or directories")
     pe.add_argument("--json", action="store_true", help="emit JSON instead of a table")
     pe.add_argument("--strict", action="store_true", help="stop on the first unreadable frame")
+    pe.add_argument("--overlay", metavar="DIR",
+                    help="also write an annotated overlay per frame into DIR")
     add_common(pe)
     pe.set_defaults(func=cmd_extract)
 
