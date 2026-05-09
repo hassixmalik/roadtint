@@ -23,6 +23,7 @@ from .extract import ExtractionError, extract_file
 from .overlay import save_overlay
 from .profile import ProfileError, builtin_profile_names, load_profile
 from .series import build_series, write_csv, write_json
+from .video import VideoUnavailable, series_from_video
 
 IMAGE_SUFFIXES = {".png", ".jpg", ".jpeg", ".bmp", ".tif", ".tiff", ".webp"}
 
@@ -152,6 +153,43 @@ def cmd_series(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_video(args: argparse.Namespace) -> int:
+    try:
+        series = series_from_video(
+            args.video,
+            args.profile,
+            every_seconds=args.every,
+            measure=args.measure,
+            roi=_parse_roi(args.roi),
+            max_frames=args.max_frames,
+        )
+    except (VideoUnavailable, ExtractionError, ProfileError) as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 1
+
+    if not len(series):
+        print("no frames sampled", file=sys.stderr)
+        return 1
+
+    if args.csv:
+        print(f"wrote {write_csv(series, args.csv)}")
+    if args.json_out:
+        print(f"wrote {write_json(series, args.json_out)}")
+
+    if not (args.csv or args.json_out):
+        for p in series:
+            m = p.measurement
+            bar = "#" * int(round(m.congestion_index * 40))
+            print(f"{p.label:<34}  {m.congestion_index:.3f}  {bar}")
+
+    s = series.summary()
+    print(
+        f"\n{s['frames']} frames  mean={s['mean_index']:.3f}"
+        f"  peak={s['max_index']:.3f} at {s['peak_at']}"
+    )
+    return 0
+
+
 def cmd_calibrate(args: argparse.Namespace) -> int:
     image = Path(args.image)
     if not image.is_file():
@@ -260,6 +298,19 @@ def build_parser() -> argparse.ArgumentParser:
                     help="do not drop repeated frames")
     add_common(ps)
     ps.set_defaults(func=cmd_series)
+
+    pv = sub.add_parser("video", help="sample a video into a time series")
+    pv.add_argument("video", help="video file")
+    pv.add_argument("--every", type=float, default=60.0,
+                    help="seconds of video between samples (default 60)")
+    pv.add_argument("--max-frames", dest="max_frames", type=int,
+                    help="stop after this many samples")
+    pv.add_argument("--csv", help="write CSV here")
+    pv.add_argument("--json-out", dest="json_out", help="write JSON here")
+    pv.add_argument("-p", "--profile", default="google_maps")
+    pv.add_argument("-m", "--measure", choices=["length", "area"], default="length")
+    pv.add_argument("--roi", help="crop as left,top,right,bottom")
+    pv.set_defaults(func=cmd_video)
 
     pc = sub.add_parser("calibrate", help="inspect a palette or build a profile")
     pc.add_argument("image", help="a screenshot from your renderer")
