@@ -63,6 +63,20 @@ capture set red is scarce — most frames are 0.00–0.2% red pixels — while
 orange covers 2–4%. The dominant congestion signal was being ignored
 entirely.
 
+### Removed coursework files
+
+The original submission also carried `dataset.docx` (17 MB),
+`Project_Presentation.pptx` (5.7 MB) and `Project_recording.mp4` (2.3 MB).
+These were dropped from the working tree: the docx contained no text at
+all, only 15 embedded copies of the screenshots already in this directory.
+
+They remain reachable in git history, so a full clone still pays for them.
+Fetch a shallow copy if that matters:
+
+```bash
+git clone --depth 1 https://github.com/hassixmalik/Trafic-Prediction-System.git
+```
+
 ### Try it
 
 ```bash
