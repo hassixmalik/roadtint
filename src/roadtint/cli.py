@@ -150,6 +150,13 @@ def cmd_series(args: argparse.Namespace) -> int:
             f"  peak={s['max_index']:.3f} at {s['peak_at']}"
             f"  quietest={s['min_index']:.3f} at {s['quietest_at']}"
         )
+        if s.get("low_coverage_frames"):
+            names = ", ".join(s["low_coverage_frames"])
+            print(
+                f"warning: little road detected in {names} - "
+                "shares there rest on very few pixels",
+                file=sys.stderr,
+            )
     return 0
 
 

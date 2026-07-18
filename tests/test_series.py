@@ -163,3 +163,40 @@ class TestOutputs:
         s = build_series(sorted(frame_dir.glob("*.png")))
         out = write_csv(s, tmp_path / "nested" / "deep" / "out.csv")
         assert out.is_file()
+
+
+class TestLowCoverage:
+    def _frame(self, tmp_path, name, road_len, row):
+        """Vary road length AND position.
+
+        Position matters: frames differing only slightly in road length
+        are perceptual duplicates and get dropped before the coverage
+        check ever sees them.
+        """
+        a = canvas(200, 200)
+        if road_len:
+            hline(a, row, GREEN, x0=0, x1=road_len, width=5)
+        to_image(a).save(tmp_path / name)
+
+    def test_flags_a_frame_with_far_less_road(self, tmp_path):
+        self._frame(tmp_path, "09_00am.png", 200, 40)
+        self._frame(tmp_path, "10_00am.png", 190, 90)
+        self._frame(tmp_path, "11_00am.png", 180, 140)
+        self._frame(tmp_path, "12_00pm.png", 10, 180)   # barely any road
+
+        s = build_series(sorted(tmp_path.glob("*.png")))
+        assert len(s) == 4, "fixtures must survive dedup"
+        assert s.summary()["low_coverage_frames"] == ["12:00"]
+
+    def test_consistent_frames_raise_no_flag(self, tmp_path):
+        for i, name in enumerate(["09_00am.png", "10_00am.png", "11_00am.png"]):
+            self._frame(tmp_path, name, 200 - i * 5, 40 + i * 50)
+        s = build_series(sorted(tmp_path.glob("*.png")))
+        assert len(s) == 3
+        assert s.summary()["low_coverage_frames"] == []
+
+    def test_too_few_frames_to_judge(self, tmp_path):
+        self._frame(tmp_path, "09_00am.png", 200, 60)
+        self._frame(tmp_path, "10_00am.png", 5, 150)
+        s = build_series(sorted(tmp_path.glob("*.png")))
+        assert s.low_coverage() == []

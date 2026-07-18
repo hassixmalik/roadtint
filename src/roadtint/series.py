@@ -148,11 +148,30 @@ class Series:
             return None
         return min(self.points, key=lambda p: p.measurement.congestion_index)
 
+    def low_coverage(self, factor: float = 0.4) -> List[TimePoint]:
+        """Points whose road coverage is far below the series median.
+
+        A share is only as trustworthy as the amount of road it was
+        computed over. A frame that happens to catch a corner of the map,
+        or where the overlay failed to load, still reports confident
+        shares - over almost nothing. These are the frames to treat with
+        suspicion or exclude.
+        """
+        if len(self.points) < 3:
+            return []
+        covs = sorted(p.measurement.road_coverage for p in self.points)
+        mid = len(covs) // 2
+        median = covs[mid] if len(covs) % 2 else (covs[mid - 1] + covs[mid]) / 2
+        if median <= 0:
+            return []
+        return [p for p in self.points if p.measurement.road_coverage < median * factor]
+
     def summary(self) -> Dict[str, Any]:
         if not self.points:
             return {"frames": 0}
         idx = [p.measurement.congestion_index for p in self.points]
         peak, quiet = self.peak(), self.quietest()
+        suspect = self.low_coverage()
         return {
             "frames": len(self.points),
             "duplicates_removed": self.duplicates_removed,
@@ -161,6 +180,7 @@ class Series:
             "max_index": round(max(idx), 4),
             "peak_at": peak.label if peak else None,
             "quietest_at": quiet.label if quiet else None,
+            "low_coverage_frames": [p.label for p in suspect],
         }
 
 

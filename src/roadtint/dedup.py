@@ -81,20 +81,33 @@ def dhash(image: Image.Image | str | Path, hash_size: int = 8) -> int:
 
     rgb = image.convert("RGB")
 
-    # Gradient bits use a dead-band: a bit is set only when one cell is
-    # clearly brighter than its neighbour. Without it, cells that are
-    # nearly equal - the two sides of a thin stripe after resampling -
-    # flip on recompression noise, and an identical frame saved as PNG and
-    # as JPEG hashes 16 bits apart.
-    grad_margin = 4  # out of 255
+    # Gradients are computed over SATURATION, not luminance.
+    #
+    # A traffic overlay is defined by being colourful, not by being bright:
+    # a green road at luminance 124 over a grey basemap at 128 is almost
+    # invisible in greyscale, and after an 8x8 downscale the whole frame
+    # flattens to a spread of 1. Frames with roads in completely different
+    # places then hash within a bit of each other. In saturation the same
+    # road is unmissable.
+    arr_full = np.asarray(rgb, dtype=np.float32)
+    mx = arr_full.max(axis=-1)
+    mn = arr_full.min(axis=-1)
+    sat_full = np.where(mx > 0, (mx - mn) / np.maximum(mx, 1e-6), 0.0)
+    sat_img = Image.fromarray((sat_full * 255).astype(np.uint8), mode="L")
+
+    # A dead-band keeps near-equal cells from flipping under recompression,
+    # scaled to the frame's own range so a low-contrast frame is not
+    # flattened entirely.
+    spread = int(np.asarray(sat_img).max()) - int(np.asarray(sat_img).min())
+    grad_margin = max(1, int(spread * 0.05))
 
     # Horizontal gradient: one extra column -> hash_size comparisons per row.
-    h_small = rgb.convert("L").resize((hash_size + 1, hash_size), Image.Resampling.LANCZOS)
+    h_small = sat_img.resize((hash_size + 1, hash_size), Image.Resampling.LANCZOS)
     h_diff = np.asarray(h_small, dtype=np.int16)
     h_bits = (h_diff[:, 1:] > h_diff[:, :-1] + grad_margin).flatten()
 
     # Vertical gradient: one extra row.
-    v_small = rgb.convert("L").resize((hash_size, hash_size + 1), Image.Resampling.LANCZOS)
+    v_small = sat_img.resize((hash_size, hash_size + 1), Image.Resampling.LANCZOS)
     v_diff = np.asarray(v_small, dtype=np.int16)
     v_bits = (v_diff[1:, :] > v_diff[:-1, :] + grad_margin).flatten()
 
