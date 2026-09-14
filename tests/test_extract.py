@@ -148,3 +148,36 @@ class TestErrors:
         m = extract_file(p)
         assert m.source == "frame.png"
         assert m.shares["congested"] == pytest.approx(1.0, abs=0.02)
+
+
+class TestThinRoadLimit:
+    """Documents where denoising stops seeing a road.
+
+    Measured, not assumed: strokes of 1-2px are erased along with the
+    speckle, 3px and wider survive. The README states this limit, so a
+    change in behaviour should fail here rather than silently make the
+    docs wrong.
+    """
+
+    @pytest.mark.parametrize("width", [1, 2])
+    def test_very_thin_roads_are_removed(self, width):
+        from .conftest import RED, canvas, hline, to_image
+
+        a = canvas(200, 200)
+        hline(a, 100, RED, width=width)
+        assert extract(to_image(a)).road_total == 0
+
+    @pytest.mark.parametrize("width", [3, 5, 10])
+    def test_normal_roads_survive(self, width):
+        from .conftest import RED, canvas, hline, to_image
+
+        a = canvas(200, 200)
+        hline(a, 100, RED, width=width)
+        assert extract(to_image(a)).shares["congested"] == pytest.approx(1.0, abs=0.02)
+
+    def test_denoise_can_be_disabled_for_thin_roads(self):
+        from .conftest import RED, canvas, hline, to_image
+
+        a = canvas(200, 200)
+        hline(a, 100, RED, width=2)
+        assert extract(to_image(a), denoise_mask=False).road_total > 0

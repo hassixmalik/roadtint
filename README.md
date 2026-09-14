@@ -109,6 +109,32 @@ roadtint calibrate my-screenshot.png \
 roadtint extract ./captures -p my_city.yaml
 ```
 
+### Check a profile by eye
+
+Numbers look plausible long before they are right. Render what actually
+matched:
+
+```bash
+roadtint extract frame.png --overlay ./overlays
+```
+
+Roads should be painted in their class colour; parkland, water, labels and
+map pins should not be.
+
+### Read a video
+
+```bash
+roadtint video recording.mp4 --every 60 --csv out.csv
+```
+
+Needs the `video` extra. Frames are labelled by elapsed video time.
+
+### Find duplicate frames
+
+```bash
+roadtint dedup ./captures
+```
+
 ### Exclude map furniture
 
 Pins, legends and watermarks are coloured too. Crop them out:
@@ -180,6 +206,14 @@ Worth knowing before you trust the output:
 - **Length is estimated, not traced.** Thinning approximates centre-line
   length by area over mean stroke width. Good enough to compare frames;
   not a substitute for real road-network geometry.
+- **Thin roads are dropped.** Strokes of 1–2px are removed by the
+  denoising pass along with the speckle; 3px and wider survive. Capture
+  at a zoom where the roads you care about are clearly drawn, or pass
+  `denoise_mask=False` through the Python API.
+
+`roadtint series` warns when a frame's road coverage falls well below the
+rest of the set, which usually means the capture drifted or the overlay
+failed to load.
 
 ## History
 
