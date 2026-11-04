@@ -59,3 +59,8 @@ ignore = [
     "E501",   # line length is handled by the formatter
     "RUF046", # explicit int(round(...)) documents the intended return type
 ]
+
+[tool.ruff.lint.per-file-ignores]
+# __all__ is grouped by topic with comments, which reads better than
+# alphabetical for a surface this size.
+"src/roadtint/__init__.py" = ["RUF022"]
