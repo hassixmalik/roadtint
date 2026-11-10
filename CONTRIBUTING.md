@@ -5,8 +5,8 @@ Thanks for taking a look. Issues and pull requests are welcome.
 ## Getting set up
 
 ```bash
-git clone https://github.com/hassixmalik/Trafic-Prediction-System.git
-cd Trafic-Prediction-System
+git clone https://github.com/hassixmalik/roadtint.git
+cd roadtint
 python -m venv .venv && source .venv/bin/activate
 pip install -e ".[dev,video]"
 pytest

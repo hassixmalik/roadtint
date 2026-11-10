@@ -74,7 +74,7 @@ They remain reachable in git history, so a full clone still pays for them.
 Fetch a shallow copy if that matters:
 
 ```bash
-git clone --depth 1 https://github.com/hassixmalik/Trafic-Prediction-System.git
+git clone --depth 1 https://github.com/hassixmalik/roadtint.git
 ```
 
 ### Try it
